@@ -1,4 +1,4 @@
-kjsjj import jbwjw
+pip install -r req.txt
 
 import streamlit as st
 import hashlib
