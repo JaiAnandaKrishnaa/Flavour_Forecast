@@ -1,4 +1,4 @@
-pip install plotly
+kjsjj import jbwjw
 
 import streamlit as st
 import hashlib
