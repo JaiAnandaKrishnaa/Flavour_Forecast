@@ -1,9 +1,15 @@
 import streamlit as st
 import hashlib
-from data_preview import data_preview
-from trend_analysis import trend_analysis
-from forecasting import forecast
-from model_accuracy import evaluate_model
+
+# Local module imports
+try:
+    from data_preview import data_preview
+    from trend_analysis import trend_analysis
+    from forecasting import forecast
+    from model_accuracy import evaluate_model
+except ModuleNotFoundError as e:
+    st.error(f"Module import error: {e}")
+    st.stop()
 
 st.set_page_config(page_title="FLAVOUR FORECAST - Potato Chips Demand Forecasting Tool", layout="wide")
 
@@ -13,7 +19,6 @@ PASSWORD_HASH = hashlib.sha256("adminpass".encode()).hexdigest()
 
 # Function for login form
 def login():
-    """Display login form in the sidebar."""
     st.sidebar.title("Login")
     username = st.sidebar.text_input("Username")
     password = st.sidebar.text_input("Password", type="password")
@@ -27,28 +32,24 @@ def login():
 
 # Logout function
 def logout():
-    """Clear session state to log out the user."""
     if st.sidebar.button("Logout"):
         st.session_state.clear()
         st.sidebar.success("Logged out successfully.")
         st.experimental_rerun()
 
-# Main application with login check
+# Session check
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 
 if not st.session_state.logged_in:
-    login()  # Show login form if not logged in
+    login()
 else:
-    # Logged in user interface
     st.sidebar.title(f"Welcome, {USERNAME}")
-    logout()  # Display logout button if logged in
+    logout()
 
-    # Main app interface
     st.title("FLAVOUR FORECAST")
     st.subheader("Potato Chips Demand Forecasting Tool")
 
-    # Navigation options
     st.sidebar.title("Navigation")
     page = st.sidebar.selectbox("Select a Section", ["Home", "Upload Data", "Analyze Data", "Forecast Data", "Model's Accuracy"])
 
@@ -66,35 +67,29 @@ else:
             ]
         )
 
-        if menu_option.startswith("Upload Data"):
-            if st.button("Go to Upload Data"):
-                st.session_state.page = "Upload Data"
-                st.experimental_rerun()  # Redirect to selected page
-                
-        elif menu_option.startswith("Analyze Data"):
-            if st.button("Go to Analyze Data"):
-                st.session_state.page = "Analyze Data"
-                st.experimental_rerun()
-                
-        elif menu_option.startswith("Forecast Data"):
-            if st.button("Go to Forecast Data"):
-                st.session_state.page = "Forecast Data"
-                st.experimental_rerun()
+        if menu_option.startswith("Upload Data") and st.button("Go to Upload Data"):
+            st.session_state.page = "Upload Data"
+            st.experimental_rerun()
+        elif menu_option.startswith("Analyze Data") and st.button("Go to Analyze Data"):
+            st.session_state.page = "Analyze Data"
+            st.experimental_rerun()
+        elif menu_option.startswith("Forecast Data") and st.button("Go to Forecast Data"):
+            st.session_state.page = "Forecast Data"
+            st.experimental_rerun()
 
     elif page == "Upload Data":
         st.header("Upload Your Dataset")
         st.write("Upload a dataset to begin analyzing trends and forecasting demand.")
         data = data_preview()
         if data is not None:
-            st.session_state['data'] = data  # Store data in session state for reuse
+            st.session_state['data'] = data
             st.success("Data uploaded successfully!")
         else:
             st.warning("Please upload a valid dataset.")
 
     elif page == "Analyze Data":
         st.header("Data Analysis")
-        st.write("Gain insights into the historical trends in sales, seasonality, and factors affecting demand for potato chips.")
-        
+        st.write("Gain insights into historical trends, seasonality, and demand drivers.")
         if 'data' in st.session_state and st.session_state['data'] is not None:
             trend_analysis(st.session_state['data'])
         else:
@@ -102,8 +97,7 @@ else:
 
     elif page == "Forecast Data":
         st.header("Demand Forecasting")
-        st.write("Predict future demand based on historical data and additional influencing factors like holidays, promotions, and weather conditions.")
-        
+        st.write("Predict future demand using historical data and influencing factors.")
         if 'data' in st.session_state and st.session_state['data'] is not None:
             forecast(st.session_state['data'])
         else:
