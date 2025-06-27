@@ -1,7 +1,7 @@
 import streamlit as st
 import hashlib
-import subprocess
-subprocess.run(["pip", "install", "-r", "req.txt"], check=True)
+# import subprocess
+# subprocess.run(["pip", "install", "-r", "requirements.txt"], check=True)
 
 # Local module imports
 try:
